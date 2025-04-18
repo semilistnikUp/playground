@@ -1,79 +1,10 @@
 import React, { useState } from 'react';
-
-// Custom CSS styles
-const styles = {
-  app: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh'
-  },
-  mainContent: {
-    display: 'flex',
-    flex: 1
-  },
-  sidebar: {
-    width: '20%',
-    backgroundColor: '#2e2e2e',
-    padding: '20px'
-  },
-  activityFeed: {
-    flexGrow: 1,
-    padding: '20px'
-  },
-  activityItem: {
-    marginBottom: '20px',
-    backgroundColor: 'white',
-    padding: '15px',
-    borderRadius: '5px'
-  },
-  button: {
-    marginTop: '10px',
-    padding: '8px 12px',
-    backgroundColor: '#4a4a4a',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  },
-  input: {
-    width: '80%',
-    padding: '8px',
-    marginTop: '10px'
-  },
-  h3: {
-    color: 'white'
-  },
-  agentItem: {
-    backgroundColor: '#3a3a3a',
-    padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px'
-  },
-  agentName: {
-    color: 'white'
-  },
-  agentActivity: {
-    color: '#bbb',
-    fontSize: '0.9rem'
-  },
-  header: {
-    backgroundColor: '#2e2e2e',
-    padding: '15px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  headerTitle: {
-    color: 'white',
-    margin: 0
-  },
-  balance: {
-    backgroundColor: '#3a3a3a',
-    color: 'white',
-    padding: '5px 15px',
-    borderRadius: '15px'
-  }
-};
+import styles from './styles';
+import MyAIAgentsPage from './MyAIAgentsPage';
+import StreetsPage from './StreetsPage';
+import NavBar from './NavBar';
+import AgentWidget from './AgentWidget';
+import MCPServerItem from './MCPServerItem';
 
 // Sidebar Component
 function Sidebar({ agents, suggestedStreets, suggestedMCPs }) {
@@ -90,7 +21,9 @@ function Sidebar({ agents, suggestedStreets, suggestedMCPs }) {
         <h3 style={styles.h3}>My Agents</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {agents.map((agent, index) => (
-            <AgentItem key={index} agent={agent} />
+            <li key={index} style={{ marginBottom: '15px' }}>
+              <AgentWidget agent={agent} showTasks={false} />
+            </li>
           ))}
         </ul>
         
@@ -150,10 +83,10 @@ function Sidebar({ agents, suggestedStreets, suggestedMCPs }) {
         <h3 style={styles.h3}>Suggested Streets</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {suggestedStreets.map((street, index) => (
-            <li key={index} style={{ ...styles.agentItem, display: 'flex', justifyContent: 'space-between' }}>
+            <li key={index} style={{ backgroundColor: '#3a3a3a', padding: '10px', marginBottom: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
               <div>
                 <p style={styles.agentName}>{street.name}</p>
-                <p style={styles.agentActivity}>{street.users} users</p>
+                <p style={{ color: '#B0ACC2', fontSize: '14px' }}>{street.users} users</p>
               </div>
               <span style={{ color: '#bbb', fontSize: '0.8rem' }}>{street.messages} msgs</span>
             </li>
@@ -165,11 +98,11 @@ function Sidebar({ agents, suggestedStreets, suggestedMCPs }) {
         <h3 style={styles.h3}>Suggested MCPs</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {suggestedMCPs.map((mcp, index) => (
-            <li key={index} style={styles.agentItem}>
+            <li key={index} style={{ backgroundColor: '#3a3a3a', padding: '10px', marginBottom: '10px', borderRadius: '4px' }}>
               <p style={styles.agentName}>{mcp.name}</p>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={styles.agentActivity}>{mcp.platform}</span>
-                <span style={styles.agentActivity}>{mcp.users} users</span>
+                <span style={{ color: '#B0ACC2', fontSize: '14px' }}>{mcp.platform}</span>
+                <span style={{ color: '#B0ACC2', fontSize: '14px' }}>{mcp.users} users</span>
               </div>
             </li>
           ))}
@@ -209,22 +142,27 @@ function ActivityFeed({ activities }) {
   );
 }
 
-// AgentItem Component
-function AgentItem({ agent }) {
-  return (
-    <li style={styles.agentItem}>
-      <p style={styles.agentName}>{agent.name}</p>
-      <p style={styles.agentActivity}>{agent.activity}</p>
-    </li>
-  );
-}
-
-// Main App Component
-function App() {
+// Dashboard Component
+function Dashboard({ balance, handleAddBalance }) {
   const [agents, setAgents] = useState([
-    { name: 'Agent #1', activity: 'Social media check' },
-    { name: 'Agent #2', activity: 'Checking the latest PR' },
-    { name: 'Agent #3', activity: 'The Name of its current activity' }
+    { 
+      name: 'Agent #1', 
+      type: 'Social Media Nerd',
+      status: 'Social media check',
+      avatar: '/api/placeholder/76/76'
+    },
+    { 
+      name: 'Agent #2', 
+      type: 'Social Media Nerd',
+      status: 'Checking the latest PR',
+      avatar: '/api/placeholder/76/76'
+    },
+    { 
+      name: 'Agent #3', 
+      type: 'Social Media Nerd',
+      status: 'The Name of its current activity',
+      avatar: '/api/placeholder/76/76'
+    }
   ]);
   
   const [activities, setActivities] = useState([
@@ -261,46 +199,143 @@ function App() {
     { name: 'Crypto', platform: 'Coinbase', users: 89 },
     { name: 'Socialisation & Games', platform: 'Discord', users: 1200 }
   ]);
+
+  // Suggested talents (MCP servers) for the third column
+  const suggestedTalents = [
+    {
+      icon: '/api/placeholder/32/32',
+      title: 'Socialisation & Games',
+      subtitle: 'Discord MCP server',
+      count: '1.2k'
+    },
+    {
+      icon: '/api/placeholder/32/32',
+      title: 'Trading',
+      subtitle: 'Binance MCP server',
+      count: '598'
+    },
+    {
+      icon: '/api/placeholder/32/32',
+      title: 'Crypto',
+      subtitle: 'Coinbase MCP server',
+      count: '89'
+    }
+  ];
+
+  const handleAddTalent = (talent) => {
+    console.log(`Adding ${talent.title} talent`);
+    // Logic to add talent would go here
+  };
+  
+  return (
+    <div style={{...styles.mainContent, padding: '20px'}}>
+      {/* Left column */}
+      <div style={{...styles.sidebar, backgroundColor: 'transparent'}}>
+        <div className="my-agents">
+          <h3 style={styles.h3}>My Agents</h3>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {agents.map((agent, index) => (
+              <li key={index} style={{ marginBottom: '15px' }}>
+                <AgentWidget agent={agent} showTasks={false} />
+              </li>
+            ))}
+          </ul>
+          
+          <button style={styles.button}>
+            Add Agent
+          </button>
+        </div>
+        
+        <div className="inbox" style={{ marginTop: '20px' }}>
+          <h3 style={styles.h3}>Inbox (from agents and people)</h3>
+          <p style={{ color: '#bbb' }}>You have 3 new messages</p>
+          <button style={styles.button}>Show All</button>
+        </div>
+        
+        <div className="create-task" style={{ marginTop: '20px' }}>
+          <h3 style={styles.h3}>Create a Task for your Agents</h3>
+          <input 
+            type="text" 
+            placeholder="Your task..." 
+            style={styles.input}
+          />
+          <button style={styles.button}>
+            <span style={{ marginRight: '5px' }}>🎤</span> Record
+          </button>
+        </div>
+      </div>
+      
+      {/* Middle column */}
+      <ActivityFeed activities={activities} />
+      
+      {/* Right column */}
+      <div style={styles.rightColumn}>
+        {/* Suggested Streets section */}
+        <div style={{ marginBottom: '30px' }}>
+          <h3 style={styles.sectionTitle}>Suggested Streets</h3>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+            {suggestedStreets.map((street, index) => (
+              <li key={index} style={{ backgroundColor: '#3a3a3a', padding: '10px', marginBottom: '10px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={styles.agentName}>{street.name}</p>
+                  <p style={{ color: '#B0ACC2', fontSize: '14px' }}>{street.users} users</p>
+                </div>
+                <span style={{ color: '#bbb', fontSize: '0.8rem' }}>{street.messages} msgs</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* Suggested Talents section */}
+        <div>
+          <h3 style={styles.sectionTitle}>Suggested Talents</h3>
+          <div>
+            {suggestedTalents.map((talent, index) => (
+              <MCPServerItem 
+                key={index}
+                icon={talent.icon}
+                title={talent.title}
+                subtitle={talent.subtitle}
+                count={talent.count}
+                onAdd={() => handleAddTalent(talent)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main App Component
+function App() {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [balance, setBalance] = useState(3002);
+  
+  const handleAddBalance = () => {
+    setBalance(prevBalance => prevBalance + 100);
+  };
   
   return (
     <div style={styles.app}>
-      <div style={{
-        backgroundColor: '#2e2e2e',
-        padding: '10px 20px',
-        display: 'flex',
-        borderBottom: '1px solid #444'
-      }}>
-        <div style={{
-          color: 'white',
-          borderBottom: '2px solid white',
-          fontWeight: 'bold',
-          marginRight: '25px',
-          cursor: 'pointer',
-          padding: '5px 0'
-        }}>Dashboard</div>
-        <div style={{
-          color: '#aaa',
-          marginRight: '25px',
-          cursor: 'pointer',
-          padding: '5px 0'
-        }}>My AI Agents</div>
-        <div style={{
-          color: '#aaa',
-          marginRight: '25px',
-          cursor: 'pointer',
-          padding: '5px 0'
-        }}>Street</div>
-      </div>
-      <header style={styles.header}>
-        <h1 style={styles.headerTitle}>Dashboard</h1>
-        <div style={styles.balance}>
-          <span>Balance: 3002</span>
-        </div>
-      </header>
-      <div style={styles.mainContent}>
-        <Sidebar agents={agents} suggestedStreets={suggestedStreets} suggestedMCPs={suggestedMCPs} />
-        <ActivityFeed activities={activities} />
-      </div>
+      <NavBar 
+        currentPage={currentPage} 
+        setCurrentPage={setCurrentPage} 
+        balance={balance} 
+        handleAddBalance={handleAddBalance}
+      />
+      
+      {currentPage === 'dashboard' && (
+        <Dashboard />
+      )}
+      
+      {currentPage === 'agents' && (
+        <MyAIAgentsPage />
+      )}
+      
+      {currentPage === 'streets' && (
+        <StreetsPage />
+      )}
     </div>
   );
 }
